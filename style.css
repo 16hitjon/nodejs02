@@ -1,0 +1,28 @@
+table,
+td {
+  border-collapse: collapse;
+  width: 30%;
+}
+
+th {
+  text-align: left;
+  background-color: black;
+  color: white;
+  width: 30%;
+}
+
+tr {
+  border-bottom: 1px solid black;
+}
+.blackTextBox{
+  background-color: black;
+  color: rgb(196, 196, 196);
+  width:fit-content
+}
+.rightItem{
+  align-self: center;
+  margin-left:1000
+}
+table{
+  min-width: 700px;
+}
