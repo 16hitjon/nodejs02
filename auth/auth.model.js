@@ -1,10 +1,47 @@
-const users = [
-    {username: 'sepp', id:'1', password: 'sepp', firstname: 'Sepp', lastname: 'Hintner' },
-    {username: 'resi', id:'2',password: 'resi', firstname: 'Resi', lastname: 'Rettich' },
-    {username: 'rudi', id:'3',password: 'rudi', firstname: 'Rudi', lastname: 'Rüpel' }
-   ];
-   function get(username) {
-    const user = users.find(user => user.username === username);
-    return user ? Object.assign({}, user) : null;
-   }
-   module.exports = { get };
+   const mysql = require("mysql");
+   const connectionProperties = {
+     host: "localhost",
+     user: "root",
+     password: "",
+     database: "movie-db",
+   };
+   class Database {
+       constructor() {
+         this.connection = mysql.createConnection(connectionProperties);
+       }
+       query(sql, params) {
+         return new Promise((resolve, reject) => {
+           this.connection.query(sql, params, (error, result) => {
+             if (error) {
+               reject(error);
+             }
+             resolve(result);
+           });
+         });
+       }
+       queryClose(sql, params) {
+         const ret = this.query(sql, params);
+         this.close();
+         return ret;
+       }
+       close() {
+         return new Promise((resolve, reject) => {
+           this.connection.end((error) => {
+             if (error) {
+               reject(error);
+             }
+             resolve();
+           });
+         });
+       }
+     }
+   
+      function get(username) {
+        const database = new Database();
+        const sql = ` SELECT id, username, passwordhash, CONCAT(firstname, ' ',
+        secondname) AS fullname
+        FROM users
+        WHERE username=?;`;
+        return database.queryClose(sql,[username]);
+      }
+      module.exports = { get };

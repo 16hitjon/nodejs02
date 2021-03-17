@@ -13,9 +13,15 @@ function renderList(movies, user) {
     <h1>Filmliste</h1>
     ${
       user
-        ? `<p class=blackTextBox>Sie sind angemeldet als <span style="font-style: italic;">${user.username}</span>. Ihr Name lautet <span style="font-style: italic;">${user.firstname} ${user.lastname}</span>.</p><div><a href="/logout">Logout</a> <a style="margin-left: 15px"href="/movie/edit">Neuer Film</a></div>`
+        ? `<p class=blackTextBox>Sie sind angemeldet als <span style="font-style: italic;">${user.username}</span>. Ihr Name lautet <span style="font-style: italic;">${user.fullname}</span>.</p>
+        <div><a href="/logout">Logout</a> <a style="margin-left: 15px"href="/movie/edit">Neuer Film</a></div>`
         : `<p class=blackTextBox>Melden Sie sich an, um Ihre Filme hinzuzufügen</p><a href="/login">Login</a>`
     }
+    <form action="movie/import" method="post" enctype="multipart/form-data">
+      <label for="importfile">Import-Datei:</label>
+      <input type="file" id="importfile" name="importfile">
+      <input type="submit" value="Importieren">
+    </form>
     <table>
     <tr><th>Titel</th><th>Jahr</th><th>Öffentlich</th><th>Besitzer</th>
     <th></th><th></th></tr>
@@ -58,6 +64,21 @@ function renderError(error) {
     </html>
     `;
 }
+function renderImport(error, user) {
+  return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <title>Filmliste</title>
+    </head>
+    <body>
+    <h1>Importieren</h1>
+    
+    </body>
+    </html>
+    `;
+}
 function renderMovie(movie, user) {
   return `
     <!DOCTYPE html>
@@ -81,7 +102,7 @@ function renderMovie(movie, user) {
     <h1>Filmliste</h1>
     ${
       user
-        ? `<p class=blackTextBox>Sie sind angemeldet als <span style="font-style: italic;">${user.username}</span>. Ihr Name lautet <span style="font-style: italic;">${user.firstname} ${user.lastname}</span>.</p><div><a href="/logout">Logout</a> <a style="margin-left: 15px"href="/movie/edit">Neuer Film</a></div>`
+        ? `<p class=blackTextBox>Sie sind angemeldet als <span style="font-style: italic;">${user.username}</span>. Ihr Name lautet <span style="font-style: italic;">${user.fullname}</span>.</p><div><a href="/logout">Logout</a> <a style="margin-left: 15px"href="/movie/edit">Neuer Film</a></div>`
         : `<p class=blackTextBox>Melden Sie sich an, um Ihre Filme hinzuzufügen</p><a href="/login">Login</a>`
     }
     <form action="/movie/save" method="post">
@@ -156,13 +177,15 @@ function viewMovie(movie, user) {
   <h1>Filmliste</h1>
   ${
     user
-      ? `<p class=blackTextBox>Sie sind angemeldet als <span style="font-style: italic;">${user.username}</span>. Ihr Name lautet <span style="font-style: italic;">${user.firstname} ${user.lastname}</span>.</p><div><a href="/logout">Logout</a> <a style="margin-left: 15px"href="/movie/edit">Neuer Film</a></div>`
+      ? `<p class=blackTextBox>Sie sind angemeldet als <span style="font-style: italic;">${user.username}</span>. Ihr Name lautet <span style="font-style: italic;">${user.fullname}</span>.</p><div><a href="/logout">Logout</a> <a style="margin-left: 15px"href="/movie/edit">Neuer Film</a></div>`
       : `<p class=blackTextBox>Melden Sie sich an, um Ihre Filme hinzuzufügen</p><a href="/login">Login</a>`
   }
       <table style="width: 200px">
       <tr><td>Titel:</td><td style="width: auto" >${movie.title}</td></tr>
       <tr><td>Jahr:</td><td>${movie.year}</td></tr>
-      <tr><td>Öffentlich:</td><td>${movie.published == 1 ? `Ja` : `Nein`}</td></tr>
+      <tr><td>Öffentlich:</td><td>${
+        movie.published == 1 ? `Ja` : `Nein`
+      }</td></tr>
       <tr><td>Besitzer:</td><td>${movie.owner}</td></tr>
       </table>
       <a href="/movie">Zurück</a>
@@ -172,4 +195,10 @@ function viewMovie(movie, user) {
       </html>
       `;
 }
-module.exports = { renderList, renderMovie, viewMovie, renderError };
+module.exports = {
+  renderList,
+  renderMovie,
+  viewMovie,
+  renderError,
+  renderImport,
+};

@@ -71,10 +71,26 @@ function saveAction(request, response) {
       .catch((error) => response.send(movieView.renderError(error)));
   } else response.redirect(request.baseUrl);
 }
+function importAction(request, response)  {
+  console.log('in ImportAction');
+  try {
+  const movies = JSON.parse(request.files.importfile.data.toString('ascii'));
+  console.log('in ImportAction -> parsed');
+  console.log('in ImportAction -> MoviesNumber'+movies.length);
+  movies.forEach(movie => {
+    console.log(movie);
+  });
+  movieModel.saveMoviesDatabase(movies,request.user.id).then(()=>response.redirect(request.baseUrl));
+  } catch (error) {
+  response.send('Falsches JSON-Format');
+  }
+ }
+
 module.exports = {
   listAction,
   removeAction,
   editAction,
   saveAction,
   viewAction,
+  importAction
 };

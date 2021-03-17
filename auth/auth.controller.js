@@ -3,6 +3,7 @@ const expressSession = require("express-session");
 const LocalStrategy = require("passport-local");
 const authView = require("./auth.view");
 const authModel = require("./auth.model");
+const crypto = require("crypto");
 module.exports = function (app) {
   app.use(
     expressSession({
@@ -13,24 +14,33 @@ module.exports = function (app) {
   );
   passport.serializeUser((user, done) => done(null, user.username));
   passport.deserializeUser((id, done) => {
-    const user = authModel.get(id);
-    if (user) {
-      done(null, user);
-    } else {
-      done(null, false);
-    }
+    //const user = authModel.get(id);
+    authModel.get(id).then((result) => {
+      user = result[0];
+      if (user) {
+        done(null, user);
+      } else {
+        done(null, false);
+      }
+    });
   });
   app.use(passport.initialize());
   app.use(passport.session());
   passport.use(
     new LocalStrategy((username, password, done) => {
-      const user = authModel.get(username);
-      if (user && user.password === password) {
-        user.password = "";
-        done(null, user);
-      } else {
-        done(null, false);
-      }
+      authModel.get(username).then((result) => {
+        user = result[0];
+        if (
+          user &&
+          user.passwordhash ==
+            crypto.createHash("sha256").update(password).digest("hex")
+        ) {
+          user.passwordhash = "";
+          done(null, user);
+        } else {
+          done(null, false);
+        }
+      });
     })
   );
   app.get("/login", (request, response) =>

@@ -1,3 +1,9 @@
+h1 {
+  animation: slide 1.5s ease-in-out forwards;
+}
+h1:hover{
+  animation: slide 1.5s forwards,    colorshifts 1.5s  forwards;
+}
 table,
 td {
   border-collapse: collapse;
@@ -14,15 +20,68 @@ th {
 tr {
   border-bottom: 1px solid black;
 }
-.blackTextBox{
+.blackTextBox {
   background-color: black;
   color: rgb(196, 196, 196);
-  width:fit-content
+  width: fit-content;
+  animation: slide 1.5s forwards,   colorshifts 1.5s  forwards;
 }
-.rightItem{
+/* testing css */
+@keyframes slide {
+  0% {
+    margin-left: 0;
+  }
+  80% {
+    margin-left: 200px;
+  }
+  100% {
+    margin-left: 0px;
+  }
+}
+@keyframes bounce {
+  0% {
+    margin-top: 0;
+  }
+  20% {
+    margin-top: 50px;
+  }
+  40% {
+    margin-top: 500px;
+  }
+  60% {
+    margin-top: 50px;
+  }
+  80% {
+    margin-top: 500px;
+  }
+  100% {
+    margin-top: 50px;
+  }
+}
+@keyframes colorshifts {
+  0% {
+    color: black;
+  }
+  20% {
+    color: blue;
+  }
+  40% {
+    color: green;
+  }
+  60% {
+    color: yellow;
+  }
+  80% {
+    color: red;
+  }
+  100% {
+    color: white;
+  }
+}
+.rightItem {
   align-self: center;
-  margin-left:1000
+  margin-left: 1000;
 }
-table{
+table {
   min-width: 700px;
 }
