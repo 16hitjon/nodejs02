@@ -16,7 +16,8 @@ module.exports = function (app) {
   passport.deserializeUser((id, done) => {
     //const user = authModel.get(id);
     authModel.get(id).then((result) => {
-      user = result[0];
+      user = result;
+      user.passwordhash="";
       if (user) {
         done(null, user);
       } else {
@@ -29,7 +30,7 @@ module.exports = function (app) {
   passport.use(
     new LocalStrategy((username, password, done) => {
       authModel.get(username).then((result) => {
-        user = result[0];
+        user = result;
         if (
           user &&
           user.passwordhash ==

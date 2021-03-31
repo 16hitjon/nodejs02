@@ -1,6 +1,6 @@
 const { deserializeUser } = require("passport");
 
-function renderList(movies, user) {
+function renderList(movies, user,count) {
   return `
     <!DOCTYPE html>
     <html lang="en">
@@ -17,18 +17,14 @@ function renderList(movies, user) {
         <div><a href="/logout">Logout</a> <a style="margin-left: 15px"href="/movie/edit">Neuer Film</a></div>`
         : `<p class=blackTextBox>Melden Sie sich an, um Ihre Filme hinzuzufügen</p><a href="/login">Login</a>`
     }
-    <form action="movie/import" method="post" enctype="multipart/form-data">
-      <label for="importfile">Import-Datei:</label>
-      <input type="file" id="importfile" name="importfile">
-      <input type="submit" value="Importieren">
-    </form>
-    <table>
+    <p>Insgesamt sind ${count} Filme in der Datenbank</p>
+    <table class="bigTable">
     <tr><th>Titel</th><th>Jahr</th><th>Öffentlich</th><th>Besitzer</th>
     <th></th><th></th></tr>
     ${movies
       .map((movie) =>
         movie.owner == user?.username || movie.published == 1
-          ? `<tr>
+          ? `<tr class="trBorder">
     <td>${movie.title}</td><td>${movie.year}</td><td>${
               movie.published == 1 ? `Ja` : `Nein`
             }</td><td>${movie.owner}</td>
@@ -44,7 +40,11 @@ function renderList(movies, user) {
       )
       .join("")}
     </table>
-    
+    <form style="margin-top: 20px"action="movie/import" method="post" enctype="multipart/form-data">
+      <label for="importfile">Import-Datei:</label>
+      <input type="file" id="importfile" name="importfile">
+      <input type="submit" value="Importieren">
+    </form>
     </body>
     </html>
     `;
@@ -64,20 +64,22 @@ function renderError(error) {
     </html>
     `;
 }
-function renderImport(error, user) {
-  return `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-    <meta charset="UTF-8">
-    <title>Filmliste</title>
-    </head>
-    <body>
-    <h1>Importieren</h1>
-    
-    </body>
-    </html>
-    `;
+function renderImport(msg) {
+  return`
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+  <meta charset="UTF-8">
+  <title>Filmliste</title>
+  </head>
+  <body>
+  <h1>Meldung</h1>
+  <p>Import meldet:</p>
+  <p>${msg}</p>
+  <a href="/movie"> Zurück</a>
+  </body>
+  </html>
+  `;
 }
 function renderMovie(movie, user) {
   return `
@@ -86,17 +88,7 @@ function renderMovie(movie, user) {
     <head>
     <meta charset="UTF-8">
     <title>Filmliste</title>
-    <style>
-    table,
-    td {
-      width: 10%;
-    }
-    .blackTextBox{
-      background-color: black;
-      color: rgb(196, 196, 196);
-      width:fit-content
-    }
-</style>
+    <link rel="stylesheet" href="/style.css">
     </head>
     <body>
     <h1>Filmliste</h1>
@@ -108,7 +100,7 @@ function renderMovie(movie, user) {
     <form action="/movie/save" method="post">
     <input type="hidden" name="id" value="${movie.id}">
     <input type="hidden" name="owner" value="${user.id}" >
-    <table>
+    <table class="smallTable">
     <tr>
     <td><label for="title">Titel:</label></td>
     <td ><input style="width:120%" type="text" id="title" name="title"
@@ -148,30 +140,9 @@ function viewMovie(movie, user) {
   <head>
   <meta charset="UTF-8">
   <title>Filmliste</title>
-  <style>
-    table,
-    td {
-      border-collapse: collapse;
-    }
-    
-    th {
-      background-color: black;
-      color: white;
-    }
-    
-    tr {
-      border-bottom: 1px solid black;
-    }
-    .blackTextBox{
-      background-color: black;
-      color: rgb(196, 196, 196);
-      width:fit-content
-    }
-    .rightItem{
-      
-      margin-left:1000
-    }
-</style>
+  
+  <link rel="stylesheet" href="/style.css">
+  
   </head>
   <body>
   <h1>Filmliste</h1>
@@ -180,13 +151,13 @@ function viewMovie(movie, user) {
       ? `<p class=blackTextBox>Sie sind angemeldet als <span style="font-style: italic;">${user.username}</span>. Ihr Name lautet <span style="font-style: italic;">${user.fullname}</span>.</p><div><a href="/logout">Logout</a> <a style="margin-left: 15px"href="/movie/edit">Neuer Film</a></div>`
       : `<p class=blackTextBox>Melden Sie sich an, um Ihre Filme hinzuzufügen</p><a href="/login">Login</a>`
   }
-      <table style="width: 200px">
-      <tr><td>Titel:</td><td style="width: auto" >${movie.title}</td></tr>
-      <tr><td>Jahr:</td><td>${movie.year}</td></tr>
-      <tr><td>Öffentlich:</td><td>${
+      <table class="smallTable">
+      <tr class="trBorder"><td style="width: 20%" >Titel:</td><td >${movie.title}</td></tr>
+      <tr class="trBorder"><td>Jahr:</td><td>${movie.year}</td></tr>
+      <tr class="trBorder"><td>Öffentlich:</td><td>${
         movie.published == 1 ? `Ja` : `Nein`
       }</td></tr>
-      <tr><td>Besitzer:</td><td>${movie.owner}</td></tr>
+      <tr class="trBorder" ><td>Besitzer:</td><td>${movie.owner}</td></tr>
       </table>
       <a href="/movie">Zurück</a>
       </div>
@@ -200,5 +171,5 @@ module.exports = {
   renderMovie,
   viewMovie,
   renderError,
-  renderImport,
+  renderImport
 };

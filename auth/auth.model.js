@@ -36,12 +36,13 @@
        }
      }
    
-      function get(username) {
+      async function get(username) {
         const database = new Database();
         const sql = ` SELECT id, username, passwordhash, CONCAT(firstname, ' ',
         secondname) AS fullname
         FROM users
         WHERE username=?;`;
-        return database.queryClose(sql,[username]);
+        const result1= await database.queryClose(sql,[username]);
+        return result1.length ? result1[0]:null;
       }
       module.exports = { get };
